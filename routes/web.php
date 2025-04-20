@@ -16,39 +16,28 @@ if (strpos($uri, $basePath) === 0) {
 }
 
 $userController = new UsersController();
+$companyController = new CompaniesController();
+$projectController = new ProjectsController();
+$courseController = new CoursesController();
 
 if ($method === 'GET' && $uri === '/users') {
     $userController->index();
-}
-elseif ($method === 'GET' && preg_match('#^/users/(\d+)$#', $uri, $matches)) {
+} elseif ($method === 'GET' && preg_match('#^/users/(\d+)$#', $uri, $matches)) {
     $userController->show($matches[1]);
-}
-elseif ($method === 'POST' && $uri === '/users') {
+} elseif ($method === 'POST' && $uri === '/users') {
     $data = json_decode(file_get_contents('php://input'), true);
     $userController->create($data);
-}
-elseif ($method === 'PUT' && preg_match('#^/users/(\d+)$#', $uri, $matches)) {
+} elseif ($method === 'PUT' && preg_match('#^/users/(\d+)$#', $uri, $matches)) {
     $data = json_decode(file_get_contents('php://input'), true);
     $userController->update($matches[1], $data);
-}
-elseif ($method === 'DELETE' && preg_match('#^/users/(\d+)$#', $uri, $matches)) {
+} elseif ($method === 'DELETE' && preg_match('#^/users/(\d+)$#', $uri, $matches)) {
     $userController->destroy($matches[1]);
-}
-elseif ($method === 'POST' && $uri === '/login') {
+} elseif ($method === 'POST' && $uri === '/login') {
     $data = json_decode(file_get_contents('php://input'), true);
     $userController->login($data);
-}
-elseif ($method === 'POST' && $uri === '/logout') {
+} elseif ($method === 'POST' && $uri === '/logout') {
     $userController->logout();
-}
-else {
-    http_response_code(404);
-    echo json_encode(['error' => 'Not Found']);
-}
-
-$companyController = new CompaniesController();
-
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/companies') {
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/companies') {
     $companyController->index();
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && preg_match('/^\/companies\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
     $companyController->show($matches[1]);
@@ -60,13 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/compan
     $companyController->update($matches[1], $data);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && preg_match('/^\/companies\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
     $companyController->destroy($matches[1]);
-}
-else {
-    http_response_code(404);
-    echo json_encode(['error' => 'Not Found']);
-}
-$courseController = new CoursesController();
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/courses') {
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/courses') {
     $courseController->index();
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && preg_match('/^\/courses\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
     $courseController->show($matches[1]);
@@ -80,13 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/course
     $courseController->destroy($matches[1]);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && preg_match('/^\/courses\/assign\/(\d+)\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
     $courseController->assign($matches[1], $matches[2]);
-}
-else {
-    http_response_code(404);
-    echo json_encode(['error' => 'Not Found']);
-}
-$projectController = new ProjectsController();
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/projects') {
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/projects') {
     $projectController->index();
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && preg_match('/^\/projects\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
     $projectController->show($matches[1]);
@@ -100,8 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/projec
     $projectController->destroy($matches[1]);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && preg_match('/^\/projects\/assign\/(\d+)\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
     $projectController->assign($matches[1], $matches[2]);
-}
-else {
+} else {
     http_response_code(404);
     echo json_encode(['error' => 'Not Found']);
 }
