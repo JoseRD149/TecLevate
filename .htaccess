@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# Habilita el seguimiento de enlaces simbólicos
+Options +FollowSymlinks
+
+# Redirige todo a web.php si no es un archivo o directorio real
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /TecLevate/routes/web.php [QSA,L]

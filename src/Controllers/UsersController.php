@@ -1,6 +1,6 @@
 <?php
 
-namespace   TecLevate\Controllers;
+namespace TecLevate\Controllers;
 
 use TecLevate\Models\UsersModel;
 
