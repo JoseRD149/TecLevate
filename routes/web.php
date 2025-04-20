@@ -3,6 +3,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../config/config.php';
 
 use TecLevate\Controllers\UsersController;
+use TecLevate\Controllers\CompaniesController;
 
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -37,6 +38,26 @@ elseif ($method === 'POST' && $uri === '/login') {
 }
 elseif ($method === 'POST' && $uri === '/logout') {
     $userController->logout();
+}
+else {
+    http_response_code(404);
+    echo json_encode(['error' => 'Not Found']);
+}
+
+$companyController = new CompaniesController();
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/companies') {
+    $companyController->index();
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && preg_match('/^\/companies\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+    $companyController->show($matches[1]);
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['REQUEST_URI'] === '/companies') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $companyController->store($data);
+} elseif ($_SERVER['REQUEST_METHOD'] === 'PUT' && preg_match('/^\/companies\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $companyController->update($matches[1], $data);
+} elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && preg_match('/^\/companies\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+    $companyController->destroy($matches[1]);
 }
 else {
     http_response_code(404);
