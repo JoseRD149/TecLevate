@@ -4,6 +4,8 @@ require_once __DIR__ . '/../config/config.php';
 
 use TecLevate\Controllers\UsersController;
 use TecLevate\Controllers\CompaniesController;
+use TecLevate\Controllers\CoursesController;
+use TecLevate\Controllers\ProjectsController;
 
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -23,7 +25,7 @@ elseif ($method === 'GET' && preg_match('#^/users/(\d+)$#', $uri, $matches)) {
 }
 elseif ($method === 'POST' && $uri === '/users') {
     $data = json_decode(file_get_contents('php://input'), true);
-    $userController->store($data);
+    $userController->create($data);
 }
 elseif ($method === 'PUT' && preg_match('#^/users/(\d+)$#', $uri, $matches)) {
     $data = json_decode(file_get_contents('php://input'), true);
@@ -58,6 +60,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/compan
     $companyController->update($matches[1], $data);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && preg_match('/^\/companies\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
     $companyController->destroy($matches[1]);
+}
+else {
+    http_response_code(404);
+    echo json_encode(['error' => 'Not Found']);
+}
+$courseController = new CoursesController();
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/courses') {
+    $courseController->index();
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && preg_match('/^\/courses\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+    $courseController->show($matches[1]);
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['REQUEST_URI'] === '/courses') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $courseController->create($data);
+} elseif ($_SERVER['REQUEST_METHOD'] === 'PUT' && preg_match('/^\/courses\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $courseController->update($matches[1], $data);
+} elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && preg_match('/^\/courses\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+    $courseController->destroy($matches[1]);
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && preg_match('/^\/courses\/assign\/(\d+)\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+    $courseController->assign($matches[1], $matches[2]);
+}
+else {
+    http_response_code(404);
+    echo json_encode(['error' => 'Not Found']);
+}
+$projectController = new ProjectsController();
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/projects') {
+    $projectController->index();
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && preg_match('/^\/projects\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+    $projectController->show($matches[1]);
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['REQUEST_URI'] === '/projects') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $projectController->create($data);
+} elseif ($_SERVER['REQUEST_METHOD'] === 'PUT' && preg_match('/^\/projects\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $projectController->update($matches[1], $data);
+} elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && preg_match('/^\/projects\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+    $projectController->destroy($matches[1]);
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && preg_match('/^\/projects\/assign\/(\d+)\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+    $projectController->assign($matches[1], $matches[2]);
 }
 else {
     http_response_code(404);

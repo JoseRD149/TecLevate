@@ -23,7 +23,7 @@ class UsersController
         return $this->respondJSON($this->usersModel->getById($id));
     }
 
-    public function store($data)
+    public function create($data)
     {
         $success = $this->usersModel->create($data);
         return $this->respondJSON(['success' => $success]);
