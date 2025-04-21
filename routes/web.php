@@ -6,6 +6,8 @@ use TecLevate\Controllers\UsersController;
 use TecLevate\Controllers\CompaniesController;
 use TecLevate\Controllers\CoursesController;
 use TecLevate\Controllers\ProjectsController;
+use TecLevate\Controllers\UsersCoursesController;
+use TecLevate\Controllers\UsersProjectsController;
 
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -19,6 +21,8 @@ $userController = new UsersController();
 $companyController = new CompaniesController();
 $projectController = new ProjectsController();
 $courseController = new CoursesController();
+$userCourseController = new UsersCoursesController();
+$usersProjectsController = new UsersProjectsController();
 
 if ($method === 'GET' && $uri === '/users') {
     $userController->index();
@@ -77,6 +81,30 @@ if ($method === 'GET' && $uri === '/users') {
     $projectController->destroy($matches[1]);
 } elseif ($method === 'POST' && preg_match('/^\/projects\/assign\/(\d+)\/(\d+)$/', $uri, $matches)) {
     $projectController->assign($matches[1], $matches[2]);
+} elseif ($method === 'GET' && $uri === '/user-courses') {
+    $userCourseController->index();
+} elseif ($method === 'GET' && preg_match('/^\/user-courses\/(\d+)$/', $uri, $matches)) {
+    $userCourseController->show($matches[1]);
+} elseif ($method === 'POST' && $uri === '/user-courses') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $userCourseController->store($data);
+} elseif ($method === 'PUT' && preg_match('/^\/user-courses\/(\d+)$/', $uri, $matches)) {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $userCourseController->update($matches[1], $data);
+} elseif ($method === 'DELETE' && preg_match('/^\/user-courses\/(\d+)$/', $uri, $matches)) {
+    $userCourseController->destroy($matches[1]);
+} elseif ($method === 'GET' && $uri === '/user-projects') {
+    $userProjectController->index();
+} elseif ($method === 'GET' && preg_match('/^\/user-projects\/(\d+)$/', $uri, $matches)) {
+    $userProjectController->show($matches[1]);
+} elseif ($method === 'POST' && $uri === '/user-projects') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $userProjectController->store($data);
+} elseif ($method === 'PUT' && preg_match('/^\/user-projects\/(\d+)$/', $uri, $matches)) {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $userProjectController->update($matches[1], $data);
+} elseif ($method === 'DELETE' && preg_match('/^\/user-projects\/(\d+)$/', $uri, $matches)) {
+    $userProjectController->destroy($matches[1]);
 } else {
     http_response_code(404);
     echo json_encode(['error' => 'Not Found']);
