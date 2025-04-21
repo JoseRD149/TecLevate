@@ -37,45 +37,45 @@ if ($method === 'GET' && $uri === '/users') {
     $userController->login($data);
 } elseif ($method === 'POST' && $uri === '/logout') {
     $userController->logout();
-} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/companies') {
+} elseif ($method === 'GET' && $uri === '/companies') {
     $companyController->index();
-} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && preg_match('/^\/companies\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+} elseif ($method === 'GET' && preg_match('/^\/companies\/(\d+)$/', $uri, $matches)) {
     $companyController->show($matches[1]);
-} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['REQUEST_URI'] === '/companies') {
+} elseif ($method === 'POST' && $uri === '/companies') {
     $data = json_decode(file_get_contents('php://input'), true);
     $companyController->store($data);
-} elseif ($_SERVER['REQUEST_METHOD'] === 'PUT' && preg_match('/^\/companies\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+} elseif ($method === 'PUT' && preg_match('/^\/companies\/(\d+)$/', $uri, $matches)) {
     $data = json_decode(file_get_contents('php://input'), true);
     $companyController->update($matches[1], $data);
-} elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && preg_match('/^\/companies\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+} elseif ($method === 'DELETE' && preg_match('/^\/companies\/(\d+)$/', $uri, $matches)) {
     $companyController->destroy($matches[1]);
-} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/courses') {
+} elseif ($method === 'GET' && $uri === '/courses') {
     $courseController->index();
-} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && preg_match('/^\/courses\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+} elseif ($method === 'GET' && preg_match('/^\/courses\/(\d+)$/', $uri, $matches)) {
     $courseController->show($matches[1]);
-} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['REQUEST_URI'] === '/courses') {
+} elseif ($method === 'POST' && $uri === '/courses') {
     $data = json_decode(file_get_contents('php://input'), true);
     $courseController->create($data);
-} elseif ($_SERVER['REQUEST_METHOD'] === 'PUT' && preg_match('/^\/courses\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+} elseif ($method === 'PUT' && preg_match('/^\/courses\/(\d+)$/', $uri, $matches)) {
     $data = json_decode(file_get_contents('php://input'), true);
     $courseController->update($matches[1], $data);
-} elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && preg_match('/^\/courses\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+} elseif ($method === 'DELETE' && preg_match('/^\/courses\/(\d+)$/', $uri, $matches)) {
     $courseController->destroy($matches[1]);
-} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && preg_match('/^\/courses\/assign\/(\d+)\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+} elseif ($method === 'POST' && preg_match('/^\/courses\/assign\/(\d+)\/(\d+)$/', $uri, $matches)) {
     $courseController->assign($matches[1], $matches[2]);
-} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && $_SERVER['REQUEST_URI'] === '/projects') {
+} elseif ($method === 'GET' && $uri === '/projects') {
     $projectController->index();
-} elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && preg_match('/^\/projects\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+} elseif ($method === 'GET' && preg_match('/^\/projects\/(\d+)$/', $uri, $matches)) {
     $projectController->show($matches[1]);
-} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['REQUEST_URI'] === '/projects') {
+} elseif ($method === 'POST' && $uri === '/projects') {
     $data = json_decode(file_get_contents('php://input'), true);
     $projectController->create($data);
-} elseif ($_SERVER['REQUEST_METHOD'] === 'PUT' && preg_match('/^\/projects\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+} elseif ($method === 'PUT' && preg_match('/^\/projects\/(\d+)$/', $uri, $matches)) {
     $data = json_decode(file_get_contents('php://input'), true);
     $projectController->update($matches[1], $data);
-} elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && preg_match('/^\/projects\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+} elseif ($method === 'DELETE' && preg_match('/^\/projects\/(\d+)$/', $uri, $matches)) {
     $projectController->destroy($matches[1]);
-} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && preg_match('/^\/projects\/assign\/(\d+)\/(\d+)$/', $_SERVER['REQUEST_URI'], $matches)) {
+} elseif ($method === 'POST' && preg_match('/^\/projects\/assign\/(\d+)\/(\d+)$/', $uri, $matches)) {
     $projectController->assign($matches[1], $matches[2]);
 } else {
     http_response_code(404);
