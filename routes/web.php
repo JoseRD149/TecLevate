@@ -19,88 +19,107 @@ if (strpos($uri, $basePath) === 0) {
     $uri = substr($uri, strlen($basePath));
 }
 
+$userController = new UsersController();
+$companyController = new CompaniesController();
+$projectController = new ProjectsController();
+$courseController = new CoursesController();
+$userCourseController = new UsersCoursesController();
+$usersProjectsController = new UsersProjectsController();
+$companyCourseController = new CompanyCourseController();
+$companyProjectController = new CompanyProjectController();
 
-$controllers = [
-    'users' => new UsersController(),
-    'companies' => new CompaniesController(),
-    'courses' => new CoursesController(),
-    'projects' => new ProjectsController(),
-    'user-courses' => new UsersCoursesController(),
-    'user-projects' => new UsersProjectsController(),
-    'company-courses' => new CompanyCourseController(),
-    'company-projects' => new CompanyProjectController(),
-];
-
-$routes = [
-    'GET' => [
-        '#^/users$#' => ['users', 'index'],
-        '#^/users/(\d+)$#' => ['users', 'show'],
-        '#^/companies$#' => ['companies', 'index'],
-        '#^/companies/(\d+)$#' => ['companies', 'show'],
-        '#^/courses$#' => ['courses', 'index'],
-        '#^/courses/(\d+)$#' => ['courses', 'show'],
-        '#^/projects$#' => ['projects', 'index'],
-        '#^/projects/(\d+)$#' => ['projects', 'show'],
-        '#^/user-courses$#' => ['user-courses', 'index'],
-        '#^/user-courses/(\d+)$#' => ['user-courses', 'show'],
-        '#^/user-projects$#' => ['user-projects', 'index'],
-        '#^/user-projects/(\d+)$#' => ['user-projects', 'show'],
-        '#^/company-courses$#' => ['company-courses', 'index'],
-        '#^/company-projects$#' => ['company-projects', 'index'],
-    ],
-    'POST' => [
-        '#^/users$#' => ['users', 'create'],
-        '#^/login$#' => ['users', 'login'],
-        '#^/logout$#' => ['users', 'logout'],
-        '#^/companies$#' => ['companies', 'store'],
-        '#^/courses$#' => ['courses', 'create'],
-        '#^/courses/assign/(\d+)/(\d+)$#' => ['courses', 'assign'],
-        '#^/projects$#' => ['projects', 'create'],
-        '#^/projects/assign/(\d+)/(\d+)$#' => ['projects', 'assign'],
-        '#^/user-courses$#' => ['user-courses', 'store'],
-        '#^/user-projects$#' => ['user-projects', 'store'],
-        '#^/company-courses$#' => ['company-courses', 'store'],
-        '#^/company-projects$#' => ['company-projects', 'store'],
-    ],
-    'PUT' => [
-        '#^/users/(\d+)$#' => ['users', 'update'],
-        '#^/companies/(\d+)$#' => ['companies', 'update'],
-        '#^/courses/(\d+)$#' => ['courses', 'update'],
-        '#^/projects/(\d+)$#' => ['projects', 'update'],
-        '#^/user-courses/(\d+)$#' => ['user-courses', 'update'],
-        '#^/user-projects/(\d+)$#' => ['user-projects', 'update'],
-    ],
-    'DELETE' => [
-        '#^/users/(\d+)$#' => ['users', 'destroy'],
-        '#^/companies/(\d+)$#' => ['companies', 'destroy'],
-        '#^/courses/(\d+)$#' => ['courses', 'destroy'],
-        '#^/projects/(\d+)$#' => ['projects', 'destroy'],
-        '#^/user-courses/(\d+)$#' => ['user-courses', 'destroy'],
-        '#^/user-projects/(\d+)$#' => ['user-projects', 'destroy'],
-    ]
-];
-
-
-$found = false;
-
-if (isset($routes[$method])) {
-    foreach ($routes[$method] as list($pattern, $ctrlKey, $action, $hasBody)) {
-        if (preg_match($pattern, $uri, $matches)) {
-            $found = true;
-            array_shift($matches);
-            $args = $matches;
-            if ($hasBody) {
-                $args[] = json_decode(file_get_contents('php://input'), true);
-            }
-            $controller = $controllers[$ctrlKey];
-            $result = call_user_func_array([$controller, $action], $args);
-            echo json_encode($result);
-            break;
-        }
-    }
-}
-
-if (!$found) {
+if ($method === 'GET' && $uri === '/users') {
+    $userController->index();
+} elseif ($method === 'GET' && preg_match('#^/users/(\d+)$#', $uri, $matches)) {
+    $userController->show($matches[1]);
+} elseif ($method === 'POST' && $uri === '/users') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $userController->create($data);
+} elseif ($method === 'PUT' && preg_match('#^/users/(\d+)$#', $uri, $matches)) {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $userController->update($matches[1], $data);
+} elseif ($method === 'DELETE' && preg_match('#^/users/(\d+)$#', $uri, $matches)) {
+    $userController->destroy($matches[1]);
+} elseif ($method === 'POST' && $uri === '/login') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $userController->login($data);
+} elseif ($method === 'POST' && $uri === '/logout') {
+    $userController->logout();
+} elseif ($method === 'GET' && $uri === '/companies') {
+    $companyController->index();
+} elseif ($method === 'GET' && preg_match('/^\/companies\/(\d+)$/', $uri, $matches)) {
+    $companyController->show($matches[1]);
+} elseif ($method === 'POST' && $uri === '/companies') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $companyController->store($data);
+} elseif ($method === 'PUT' && preg_match('/^\/companies\/(\d+)$/', $uri, $matches)) {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $companyController->update($matches[1], $data);
+} elseif ($method === 'DELETE' && preg_match('/^\/companies\/(\d+)$/', $uri, $matches)) {
+    $companyController->destroy($matches[1]);
+} elseif ($method === 'GET' && $uri === '/courses') {
+    $courseController->index();
+} elseif ($method === 'GET' && preg_match('/^\/courses\/(\d+)$/', $uri, $matches)) {
+    $courseController->show($matches[1]);
+} elseif ($method === 'POST' && $uri === '/courses') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $courseController->create($data);
+} elseif ($method === 'PUT' && preg_match('/^\/courses\/(\d+)$/', $uri, $matches)) {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $courseController->update($matches[1], $data);
+} elseif ($method === 'DELETE' && preg_match('/^\/courses\/(\d+)$/', $uri, $matches)) {
+    $courseController->destroy($matches[1]);
+} elseif ($method === 'POST' && preg_match('/^\/courses\/assign\/(\d+)\/(\d+)$/', $uri, $matches)) {
+    $courseController->assign($matches[1], $matches[2]);
+} elseif ($method === 'GET' && $uri === '/projects') {
+    $projectController->index();
+} elseif ($method === 'GET' && preg_match('/^\/projects\/(\d+)$/', $uri, $matches)) {
+    $projectController->show($matches[1]);
+} elseif ($method === 'POST' && $uri === '/projects') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $projectController->create($data);
+} elseif ($method === 'PUT' && preg_match('/^\/projects\/(\d+)$/', $uri, $matches)) {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $projectController->update($matches[1], $data);
+} elseif ($method === 'DELETE' && preg_match('/^\/projects\/(\d+)$/', $uri, $matches)) {
+    $projectController->destroy($matches[1]);
+} elseif ($method === 'POST' && preg_match('/^\/projects\/assign\/(\d+)\/(\d+)$/', $uri, $matches)) {
+    $projectController->assign($matches[1], $matches[2]);
+} elseif ($method === 'GET' && $uri === '/user-courses') {
+    $userCourseController->index();
+} elseif ($method === 'GET' && preg_match('/^\/user-courses\/(\d+)$/', $uri, $matches)) {
+    $userCourseController->show($matches[1]);
+} elseif ($method === 'POST' && $uri === '/user-courses') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $userCourseController->store($data);
+} elseif ($method === 'PUT' && preg_match('/^\/user-courses\/(\d+)$/', $uri, $matches)) {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $userCourseController->update($matches[1], $data);
+} elseif ($method === 'DELETE' && preg_match('/^\/user-courses\/(\d+)$/', $uri, $matches)) {
+    $userCourseController->destroy($matches[1]);
+} elseif ($method === 'GET' && $uri === '/user-projects') {
+    $userProjectController->index();
+} elseif ($method === 'GET' && preg_match('/^\/user-projects\/(\d+)$/', $uri, $matches)) {
+    $userProjectController->show($matches[1]);
+} elseif ($method === 'POST' && $uri === '/user-projects') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $userProjectController->store($data);
+} elseif ($method === 'PUT' && preg_match('/^\/user-projects\/(\d+)$/', $uri, $matches)) {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $userProjectController->update($matches[1], $data);
+} elseif ($method === 'DELETE' && preg_match('/^\/user-projects\/(\d+)$/', $uri, $matches)) {
+    $userProjectController->destroy($matches[1]);
+} elseif ($method === 'GET' && $uri === '/company-courses') {
+    $companyCourseController->index();
+} else if ($method === 'POST' && $uri === '/company-courses') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $companyCourseController->store($data);
+} elseif ($method === 'GET' && $uri === '/company-projects') {
+    $companyCourseController->index();
+} else if ($method === 'POST' && $uri === '/company-projects') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $companyCourseController->store($data);
+} else {
     http_response_code(404);
     echo json_encode(['error' => 'Not Found']);
 }

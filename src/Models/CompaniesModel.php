@@ -59,4 +59,11 @@ class CompaniesModel
         $stmt = $this->db->prepare("DELETE FROM companies WHERE id = ?");
         return $stmt->execute([$id]);
     }
+    public function getCompanyById($companyId)
+{
+    $stmt = $this->db->prepare("SELECT * FROM companies WHERE id = :company_id");
+    $stmt->bindParam(':company_id', $companyId, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 }

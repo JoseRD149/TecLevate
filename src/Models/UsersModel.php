@@ -39,7 +39,7 @@ class UsersModel
 
     public function create($data)
     {
-        $stmt = $this->db->prepare("INSERT INTO users (name, email, dni, phone, password) VALUES (:name, :email, :dni, :phone, :password)");
+        $stmt = $this->db->prepare("INSERT INTO users (name, email, dni, phone, password, company_id) VALUES (:name, :email, :dni, :phone, :password, :company_id)");
 
         $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
 
@@ -48,18 +48,20 @@ class UsersModel
             'email' => $data['email'],
             'dni' => $data['dni'],
             'phone' => $data['phone'],
-            'password' => $hashedPassword
+            'password' => $hashedPassword,
+            'company_id' => $data['company_id'] ?? null
         ]);
     }
 
     public function update($id, $data)
     {
-        $stmt = $this->db->prepare("UPDATE users SET name = :name, email = :email, dni = :dni, phone = :phone WHERE id = :id");
+        $stmt = $this->db->prepare("UPDATE users SET name = :name, email = :email, dni = :dni, phone = :phone  company_id = :company_id WHERE id = :id");
         return $stmt->execute([
             'name' => $data['name'],
             'email' => $data['email'],
             'dni' => $data['dni'],
             'phone' => $data['phone'],
+            'company_id' => $data['company_id'] ?? null,
             'id' => $id
         ]);
     }
