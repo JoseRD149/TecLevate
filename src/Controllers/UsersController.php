@@ -42,44 +42,53 @@ class UsersController
         return $this->respondJSON(['success' => $success]);
     }
 
-    private function respondJSON($data)
+    public function respondJSON($data, $statusCode = 200)
     {
         header('Content-Type: application/json');
+        http_response_code($statusCode); 
         echo json_encode($data);
+        exit;
     }
     public function login($data)
     {
         session_start();
-
+    
         $email  = $data['email'] ?? null;
         $pass   = $data['password'] ?? null;
-
+    
         if (!$email || !$pass) {
             return $this->respondJSON(['error' => 'Email and password are required'], 400);
         }
-
+    
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $this->respondJSON(['error' => 'Invalid email format'], 400);
+        }
+    
         $user = $this->usersModel->getByEmail($email);
         if (!$user) {
             return $this->respondJSON(['error' => 'Invalid email or password'], 401);
         }
-
+    
         if (!password_verify($pass, $user['password'])) {
             return $this->respondJSON(['error' => 'Invalid email or password'], 401);
         }
-
+    
         $_SESSION['id_user'] = $user['id'];
         $_SESSION['email'] = $user['email'];
-
+    
         if ($user['company_id'] !== null) {
             $companiesModel = new CompaniesModel();
-
             $company = $companiesModel->getCompanyById($user['company_id']);
             $_SESSION['company'] = $company;
         }
-
-
-        return $this->respondJSON(['success' => true, 'user' => $user, 'company' => $_SESSION['company'] ?? null]);
+    
+        return $this->respondJSON([
+            'success' => true,
+            'user' => $user,
+            'company' => $_SESSION['company'] ?? null
+        ]);
     }
+    
 
 
 
