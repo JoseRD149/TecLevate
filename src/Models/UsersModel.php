@@ -39,10 +39,7 @@ class UsersModel
     }
 
     public function create($data, $imageFile)
-    {
-        error_log('Data received: ' . print_r($data, true));
-        error_log('Image received: ' . print_r($imageFile, true));
-    
+    {    
         if (empty($data['name'])) {
             error_log('Name is empty!');
             return false; 
