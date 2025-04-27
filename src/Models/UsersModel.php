@@ -8,7 +8,7 @@ use TecLevate\Utils\Database;
 
 class UsersModel
 {
-    private $db;
+    public $db;
 
     public function __construct()
     {
