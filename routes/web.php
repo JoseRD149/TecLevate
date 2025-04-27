@@ -123,11 +123,15 @@ if ($method === 'GET' && $uri === '/users') {
     $data = json_decode(file_get_contents('php://input'), true);
     $companyCourseController->store($data);
 } elseif ($method === 'GET' && $uri === '/company-projects') {
-    $companyCourseController->index();
+    $companyProjectController->index();
 } else if ($method === 'POST' && $uri === '/company-projects') {
     $data = json_decode(file_get_contents('php://input'), true);
-    $companyCourseController->store($data);
-} else {
+    $companyProjectController->store($data);
+} elseif ($method === 'GET' && preg_match('#^/user-courses/user/(\d+)$#', $uri, $matches)) {
+    $userCourseController->getByUser(['user_id' => $matches[1]]);
+}elseif ($method === 'GET' && preg_match('#^/user-projects/user/(\d+)$#', $uri, $matches)) {
+    $usersProjectsController->getByUser(['user_id' => $matches[1]]);
+}else {
     http_response_code(404);
     echo json_encode(['error' => 'Not Found']);
 }

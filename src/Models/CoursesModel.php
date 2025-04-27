@@ -57,4 +57,16 @@ class CoursesModel {
         $stmt = $this->db->prepare("INSERT INTO users_courses (user_id, course_id) VALUES (?, ?)");
         $stmt->execute([$userId, $courseId]);
     }
+    public function getByUserId(int $userId): array
+    {
+        $sql = "
+          SELECT c.id, c.title, c.description, c.is_paid, c.price, c.url, c.start_date, c.end_date, c.expiration_date, c.company_id
+          FROM courses c
+          JOIN users_courses uc ON c.id = uc.course_id
+          WHERE uc.user_id = :userId
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['userId' => $userId]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 }

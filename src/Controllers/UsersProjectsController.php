@@ -3,7 +3,7 @@
 namespace TecLevate\Controllers;
 
 use TecLevate\Models\UsersProjectsModel;
-
+use TecLevate\Models\ProjectsModel;
 class UsersProjectsController {
     private $model;
 
@@ -51,6 +51,26 @@ class UsersProjectsController {
         } else {
             http_response_code(404);
             echo json_encode(['error' => 'Not Found']);
+        }
+    }
+    public function getByUser($request)
+    {
+        header('Content-Type: application/json');
+        $userId = isset($request['user_id']) ? (int)$request['user_id'] : null;
+
+        if (!$userId) {
+            http_response_code(400);
+            echo json_encode(['message' => 'Falta user_id']);
+            return;
+        }
+
+        try {
+            $ProjectsModel = new ProjectsModel();
+            $projects = $ProjectsModel->getByUserId($userId);
+            echo json_encode(['projects' => $projects]);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['message' => 'Error del servidor', 'error' => $e->getMessage()]);
         }
     }
 }

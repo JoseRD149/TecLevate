@@ -3,6 +3,7 @@
 namespace TecLevate\Controllers;
 
 use TecLevate\Models\UsersCoursesModel;
+use TecLevate\Models\CoursesModel;
 use TecLevate\Utils\Database;
 
 class UsersCoursesController
@@ -67,5 +68,26 @@ class UsersCoursesController
         $this->model->createCourse($title, $description, $userId);
 
         echo json_encode(['message' => 'Curso creado correctamente por el usuario']);
+    }
+    public function getByUser($request)
+    {
+        header('Content-Type: application/json');
+        $userId = isset($request['user_id']) ? (int)$request['user_id'] : null;
+
+        if (!$userId) {
+            http_response_code(400);
+            echo json_encode(['message' => 'Falta user_id']);
+            return;
+        }
+
+        try {
+            $CoursesModel = new CoursesModel(Database::getConnection());
+            $courses = $CoursesModel->getByUserId($userId);
+
+            echo json_encode(['courses' => $courses]);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['message' => 'Error del servidor', 'error' => $e->getMessage()]);
+        }
     }
 }

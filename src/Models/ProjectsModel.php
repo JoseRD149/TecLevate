@@ -57,4 +57,16 @@ class ProjectsModel {
         $stmt = $this->db->prepare("INSERT INTO users_projects (user_id, project_id) VALUES (?, ?)");
         $stmt->execute([$userId, $projectId]);
     }
+    public function getByUserId(int $userId): array
+    {
+        $sql = "
+           SELECT p.id, p.title, p.description, p.is_paid, p.payment_amount, p.url, p.start_date, p.end_date, p.expiration_date, p.company_id
+          FROM projects p
+          JOIN users_projects up ON p.id = up.project_id
+          WHERE up.user_id = :userId
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['userId' => $userId]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 }
