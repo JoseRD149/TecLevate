@@ -3,6 +3,7 @@
 namespace TecLevate\Models;
 
 use PDO;
+use Exception;
 use TecLevate\Utils\Database;
 
 class UsersModel
@@ -37,31 +38,73 @@ class UsersModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function create($data)
+    public function create($data, $imageFile)
     {
-        $stmt = $this->db->prepare("INSERT INTO users (name, email, dni, phone, password, company_id) VALUES (:name, :email, :dni, :phone, :password, :company_id)");
-
+        error_log('Data received: ' . print_r($data, true));
+        error_log('Image received: ' . print_r($imageFile, true));
+    
+        if (empty($data['name'])) {
+            error_log('Name is empty!');
+            return false; 
+        }
+    
+        if (empty($data['email']) || empty($data['password'])) {
+            error_log('Email or password is empty!');
+            return false; 
+        }
+    
+        $imagePath = null; 
+        if ($imageFile && $imageFile['error'] === 0) {
+            $uploadDir = __DIR__ . '/../uploads/';
+    
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true); 
+            }
+    
+            $imagePath = $uploadDir . basename($imageFile['name']);
+    
+            if (!move_uploaded_file($imageFile['tmp_name'], $imagePath)) {
+                error_log('Failed to move uploaded file.');
+                $imagePath = null;
+            }
+        } else {
+            error_log('File upload error: ' . ($imageFile ? $imageFile['error'] : 'No file uploaded.'));
+        }
+    
+        $stmt = $this->db->prepare("INSERT INTO users (name, email, dni, phone, password, company_id, profile_image) VALUES (:name, :email, :dni, :phone, :password, :company_id, :profile_image)");
+    
         $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
-
+    
         return $stmt->execute([
             'name' => $data['name'],
             'email' => $data['email'],
             'dni' => $data['dni'],
             'phone' => $data['phone'],
             'password' => $hashedPassword,
-            'company_id' => $data['company_id'] ?? null
+            'company_id' => $data['company_id'] ?? null,
+            'profile_image' => $imagePath
         ]);
     }
+    
 
-    public function update($id, $data)
+    public function update($id, $data, $imageFile = null)
     {
-        $stmt = $this->db->prepare("UPDATE users SET name = :name, email = :email, dni = :dni, phone = :phone  company_id = :company_id WHERE id = :id");
+        if ($imageFile && $imageFile['error'] === 0) {
+            $imagePath = 'uploads/' . basename($imageFile['name']);
+            move_uploaded_file($imageFile['tmp_name'], $imagePath);
+        } else {
+            $imagePath = $data['current_image'];
+        }
+
+        $stmt = $this->db->prepare("UPDATE users SET name = :name, email = :email, dni = :dni, phone = :phone, company_id = :company_id, profile_image = :profile_image WHERE id = :id");
+
         return $stmt->execute([
             'name' => $data['name'],
             'email' => $data['email'],
             'dni' => $data['dni'],
             'phone' => $data['phone'],
             'company_id' => $data['company_id'] ?? null,
+            'profile_image' => $imagePath,
             'id' => $id
         ]);
     }
