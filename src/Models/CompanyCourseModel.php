@@ -63,4 +63,10 @@ class CompanyCourseModel
         $stmt = $this->db->prepare("DELETE FROM companies_courses WHERE id = ?");
         return $stmt->execute([$id]);
     }
+
+    public function createCourse($title, $description, $companyId) {
+        $stmt = $this->db->prepare('INSERT INTO company_courses (title, description, company_id) VALUES (?, ?, ?)');
+        $stmt->execute([$title, $description, $companyId]);
+    }
 }
+

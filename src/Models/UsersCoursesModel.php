@@ -34,23 +34,23 @@ class UsersCoursesModel
         if (!$this->existsInTable('users', $data['user_id'])) {
             throw new Exception("User with ID " . $data['user_id'] . " does not exist.");
         }
-    
+
         if (!$this->existsInTable('courses', $data['course_id'])) {
             throw new Exception("Course with ID " . $data['course_id'] . " does not exist.");
         }
-    
+
         $enrollment = new DateTime($data['enrollment_date']);
         $expiration = isset($data['expiration_date']) ? new DateTime($data['expiration_date']) : null;
-    
+
         if ($expiration && $expiration < $enrollment) {
             throw new Exception("Expiration date cannot be earlier than enrollment date.");
         }
-    
+
         $stmt = $this->db->prepare("
             INSERT INTO users_courses (user_id, course_id, enrollment_date, expiration_date, completed) 
             VALUES (?, ?, ?, ?, ?)
         ");
-    
+
         $stmt->execute([
             $data['user_id'],
             $data['course_id'],
@@ -58,10 +58,10 @@ class UsersCoursesModel
             $data['expiration_date'] ?? null,
             $data['completed'] ?? false
         ]);
-    
+
         return $this->getById($this->db->lastInsertId());
     }
-    
+
 
     public function update($id, $data)
     {
@@ -87,9 +87,15 @@ class UsersCoursesModel
         return $stmt->execute([$id]);
     }
 
-    private function existsInTable($table, $id) {
+    private function existsInTable($table, $id)
+    {
         $stmt = $this->db->prepare("SELECT COUNT(*) FROM {$table} WHERE id = ?");
         $stmt->execute([$id]);
         return $stmt->fetchColumn() > 0;
+    }
+    public function createCourse($title, $description, $userId)
+    {
+        $stmt = $this->db->prepare('INSERT INTO users_courses (title, description, user_id) VALUES (?, ?, ?)');
+        $stmt->execute([$title, $description, $userId]);
     }
 }

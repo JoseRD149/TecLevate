@@ -22,5 +22,8 @@ class Database{
         }
         return self::$connection;
     }
+    public static function getConnection() {
+        return self::connect();
+    }
 }
 ?>
