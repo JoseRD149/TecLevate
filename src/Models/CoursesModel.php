@@ -4,7 +4,7 @@ use TecLevate\Utils\Database;
 use PDO;
 
 class CoursesModel {
-    private $db;
+    public $db;
 
     public function __construct() {
         $this->db = Database::connect();
