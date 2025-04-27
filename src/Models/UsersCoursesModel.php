@@ -9,7 +9,7 @@ use Exception;
 
 class UsersCoursesModel
 {
-    private $db;
+    public $db;
 
     public function __construct()
     {
@@ -70,17 +70,20 @@ class UsersCoursesModel
             SET user_id = ?, course_id = ?, enrollment_date = ?, expiration_date = ?, completed = ? 
             WHERE id = ?
         ");
-        $stmt->execute([
+        
+        if ($stmt->execute([
             $data['user_id'],
             $data['course_id'],
             $data['enrollment_date'],
             $data['expiration_date'] ?? null,
             $data['completed'] ?? false,
             $id
-        ]);
-        return $this->getById($id);
+        ])) {
+            return true; 
+        }
+    
+        return false;
     }
-
     public function delete($id)
     {
         $stmt = $this->db->prepare("DELETE FROM users_courses WHERE id = ?");
@@ -90,6 +93,11 @@ class UsersCoursesModel
     private function existsInTable($table, $id)
     {
         $stmt = $this->db->prepare("SELECT COUNT(*) FROM {$table} WHERE id = ?");
+        
+        if (!$stmt) {
+            throw new Exception("Failed to prepare statement for table: {$table}");
+        }
+    
         $stmt->execute([$id]);
         return $stmt->fetchColumn() > 0;
     }

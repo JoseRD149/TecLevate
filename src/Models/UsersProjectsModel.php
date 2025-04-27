@@ -7,7 +7,7 @@ use PDO;
 use DateTime;
 use Exception;
 class UsersProjectsModel {
-    private $db;
+    public $db;
 
     public function __construct() {
         $this->db = Database::connect();
