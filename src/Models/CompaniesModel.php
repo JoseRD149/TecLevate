@@ -6,7 +6,7 @@ use PDO;
 
 class CompaniesModel
 {
-    private $db;
+    public $db;
 
     public function __construct()
     {
