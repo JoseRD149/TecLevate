@@ -39,27 +39,27 @@ class UsersModel
     }
 
     public function create($data, $imageFile)
-    {    
+    {
         if (empty($data['name'])) {
             error_log('Name is empty!');
-            return false; 
+            return false;
         }
-    
+
         if (empty($data['email']) || empty($data['password'])) {
             error_log('Email or password is empty!');
-            return false; 
+            return false;
         }
-    
-        $imagePath = null; 
+
+        $imagePath = null;
         if ($imageFile && $imageFile['error'] === 0) {
             $uploadDir = __DIR__ . '/../uploads/';
-    
+
             if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true); 
+                mkdir($uploadDir, 0777, true);
             }
-    
+
             $imagePath = $uploadDir . basename($imageFile['name']);
-    
+
             if (!move_uploaded_file($imageFile['tmp_name'], $imagePath)) {
                 error_log('Failed to move uploaded file.');
                 $imagePath = null;
@@ -67,11 +67,11 @@ class UsersModel
         } else {
             error_log('File upload error: ' . ($imageFile ? $imageFile['error'] : 'No file uploaded.'));
         }
-    
+
         $stmt = $this->db->prepare("INSERT INTO users (name, email, dni, phone, password, company_id, profile_image) VALUES (:name, :email, :dni, :phone, :password, :company_id, :profile_image)");
-    
+
         $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
-    
+
         return $stmt->execute([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -82,7 +82,7 @@ class UsersModel
             'profile_image' => $imagePath
         ]);
     }
-    
+
 
     public function update($id, $data, $imageFile = null)
     {
@@ -90,14 +90,23 @@ class UsersModel
         $imagePath = isset($data['current_image']) ? $data['current_image'] : null;
 
         if ($imageFile && $imageFile['error'] === 0) {
-            $imagePath = 'uploads/' . basename($imageFile['name']);
-            move_uploaded_file($imageFile['tmp_name'], $imagePath);
-        } elseif (!$imagePath) {
-            
-            $imagePath = null; 
+            $uploadDir = __DIR__ . '/../uploads/';
+
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+
+            $imagePath = $uploadDir . basename($imageFile['name']);
+
+            if (!move_uploaded_file($imageFile['tmp_name'], $imagePath)) {
+                error_log('Failed to move uploaded file.');
+                $imagePath = null;
+            }
+        } else {
+            error_log('File upload error: ' . ($imageFile ? $imageFile['error'] : 'No file uploaded.'));
         }
         $stmt = $this->db->prepare("UPDATE users SET name = :name, email = :email, dni = :dni, phone = :phone, company_id = :company_id, profile_image = :profile_image WHERE id = :id");
-  
+
         return $stmt->execute([
             'name' => $data['name'],
             'email' => $data['email'],
