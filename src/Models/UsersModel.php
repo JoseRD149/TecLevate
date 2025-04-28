@@ -86,13 +86,15 @@ class UsersModel
 
     public function update($id, $data, $imageFile = null)
     {
+        $imagePath = isset($data['current_image']) ? $data['current_image'] : null;
+
         if ($imageFile && $imageFile['error'] === 0) {
             $imagePath = 'uploads/' . basename($imageFile['name']);
             move_uploaded_file($imageFile['tmp_name'], $imagePath);
-        } else {
-            $imagePath = $data['profile_image'] ?? null; 
+        } elseif (!$imagePath) {
+            
+            $imagePath = ''; 
         }
-
         $stmt = $this->db->prepare("UPDATE users SET name = :name, email = :email, dni = :dni, phone = :phone, company_id = :company_id, profile_image = :profile_image WHERE id = :id");
 
         return $stmt->execute([
