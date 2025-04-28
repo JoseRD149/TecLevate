@@ -90,7 +90,7 @@ class UsersModel
             $imagePath = 'uploads/' . basename($imageFile['name']);
             move_uploaded_file($imageFile['tmp_name'], $imagePath);
         } else {
-            $imagePath = $data['current_image'];
+            $imagePath = $data['profile_image'] ?? null; 
         }
 
         $stmt = $this->db->prepare("UPDATE users SET name = :name, email = :email, dni = :dni, phone = :phone, company_id = :company_id, profile_image = :profile_image WHERE id = :id");
