@@ -46,9 +46,12 @@ if ($method === 'GET' && $uri === '/users') {
     $data = json_decode(file_get_contents('php://input'), true);
     $userController->create($data);
 } elseif ($method === 'PUT' && preg_match('#^/users/(\d+)$#', $uri, $matches)) {
-    $data = $_POST;
-    $imageFile = isset($_FILES['profile_image']) ? $_FILES['profile_image'] : null;
-    $userController->update($matches[1], $data, $imageFile);
+    if (preg_match('#^/users/(\d+)$#', $uri, $m)) {
+        $data      = $_POST;                      
+        $imageFile = $_FILES['profile_image'] ?? null;
+        $userController->update($m[1], $data, $imageFile);
+        
+    }
 } elseif ($method === 'DELETE' && preg_match('#^/users/(\d+)$#', $uri, $matches)) {
     $userController->destroy($matches[1]);
 } elseif ($method === 'POST' && $uri === '/login') {
