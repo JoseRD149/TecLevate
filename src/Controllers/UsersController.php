@@ -81,7 +81,6 @@ class UsersController
         }
     
     
-        $data['company_id'] = $data['company_id'] ?? null;
 
         $success = $this->usersModel->update($id, $data);
         return $this->respondJSON(['success' => $success]);
