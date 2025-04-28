@@ -62,15 +62,24 @@ class UsersController
     {
         if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === 0) {
             $imageFile = $_FILES['profile_image'];
-            $imagePath = '/../uploads/' . basename($imageFile['name']);
             
+            $uploadDir = __DIR__ . '/../uploads/'; 
+    
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+    
+            $imagePath = $uploadDir . basename($imageFile['name']);
+    
             if (!move_uploaded_file($imageFile['tmp_name'], $imagePath)) {
                 error_log('Failed to move uploaded file.');
+            } else {
+                $data['profile_image'] = $imagePath; 
             }
-            $data['profile_image'] = $imagePath;
         } else {
             $data['profile_image'] = $data['current_image'] ?? null;
         }
+    
     
         $data['company_id'] = $data['company_id'] ?? null;
 
