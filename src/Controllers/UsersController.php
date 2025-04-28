@@ -62,12 +62,17 @@ class UsersController
     {
         if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === 0) {
             $imageFile = $_FILES['profile_image'];
-            $imagePath = 'uploads/' . basename($imageFile['name']);
-            move_uploaded_file($imageFile['tmp_name'], $imagePath);
+            $imagePath = '/../uploads/' . basename($imageFile['name']);
+            
+            if (!move_uploaded_file($imageFile['tmp_name'], $imagePath)) {
+                error_log('Failed to move uploaded file.');
+            }
             $data['profile_image'] = $imagePath;
         } else {
             $data['profile_image'] = $data['current_image'] ?? null;
         }
+    
+        $data['company_id'] = $data['company_id'] ?? null;
 
         $success = $this->usersModel->update($id, $data);
         return $this->respondJSON(['success' => $success]);
