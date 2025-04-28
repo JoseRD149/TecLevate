@@ -86,24 +86,20 @@ class UsersModel
 
     public function update($id, $data, $imageFile = null)
     {
-        error_log(json_encode($data));
-        $imagePath = isset($data['current_image']) ? $data['current_image'] : null;
-
+        $imagePath = null;
         if ($imageFile && $imageFile['error'] === 0) {
             $uploadDir = __DIR__ . '/../uploads/';
-
+    
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0777, true);
             }
-
+    
             $imagePath = $uploadDir . basename($imageFile['name']);
-
+    
             if (!move_uploaded_file($imageFile['tmp_name'], $imagePath)) {
                 error_log('Failed to move uploaded file.');
                 $imagePath = null;
             }
-        } else {
-            error_log('File upload error: ' . ($imageFile ? $imageFile['error'] : 'No file uploaded.'));
         }
         $stmt = $this->db->prepare("UPDATE users SET name = :name, email = :email, dni = :dni, phone = :phone, company_id = :company_id, profile_image = :profile_image WHERE id = :id");
 
