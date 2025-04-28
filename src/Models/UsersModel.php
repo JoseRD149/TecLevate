@@ -86,6 +86,7 @@ class UsersModel
 
     public function update($id, $data, $imageFile = null)
     {
+        error_log(json_encode($data));
         $imagePath = isset($data['current_image']) ? $data['current_image'] : null;
 
         if ($imageFile && $imageFile['error'] === 0) {
@@ -96,7 +97,7 @@ class UsersModel
             $imagePath = ''; 
         }
         $stmt = $this->db->prepare("UPDATE users SET name = :name, email = :email, dni = :dni, phone = :phone, company_id = :company_id, profile_image = :profile_image WHERE id = :id");
-
+  
         return $stmt->execute([
             'name' => $data['name'],
             'email' => $data['email'],
